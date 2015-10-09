@@ -93,30 +93,8 @@ void render()
     //clear the colour and depth buffer
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
-    //Swith to ModelView
-    glMatrixMode( GL_MODELVIEW );
-    //Reset using the Indentity Matrix
-    glLoadIdentity( );
-    gluLookAt(0.0, 0.0, 6.0, 0.0, 0.0, -1.0f, 0.0, 1.0, 0.0);
-    glRotatef(xRotation,1.0f,0.0f,0.0f);
-    glRotatef(yRotation,0.0f,1.0f,0.0f);
-    glRotatef(zRotation,0.0f,0.0f,1.0f);
-
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glVertexPointer(3, GL_FLOAT, sizeof(Vertex), 0);
-
-    glEnableClientState(GL_COLOR_ARRAY);
-    glColorPointer(4, GL_FLOAT, sizeof(Vertex), (void**)(3*sizeof(float)));
-
     glDrawElements(GL_TRIANGLES, sizeof(indices)/sizeof(GLuint),
     GL_UNSIGNED_INT,0);
-
-    glDisableClientState(GL_VERTEX_ARRAY);
-    glDisableClientState(GL_COLOR_ARRAY);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 int main(int argc, char * arg[])
@@ -136,6 +114,11 @@ int main(int argc, char * arg[])
 	//SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,SDL_GL_CONTEXT_PROFILE_CORE);
 	//SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
 	//SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
+
+	//Ask for version 4.2 of OpenGL
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 
     //Create a window
     SDL_Window * window = SDL_CreateWindow(
