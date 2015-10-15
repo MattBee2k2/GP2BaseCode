@@ -93,8 +93,7 @@ void render()
     //clear the colour and depth buffer
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
-    glDrawElements(GL_TRIANGLES, sizeof(indices)/sizeof(GLuint),
-    GL_UNSIGNED_INT,0);
+    glDrawElements(GL_TRIANGLES, sizeof(indices)/sizeof(GLuint), GL_UNSIGNED_INT,0);
 }
 
 int main(int argc, char * arg[])
