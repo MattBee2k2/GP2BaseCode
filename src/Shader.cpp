@@ -61,6 +61,7 @@ bool checkForCompileErrors(GLuint shaderProgram)
 		//We don't need the shader anymore
 		glDeleteProgram(shaderProgram);
 		return true;
+
 	}
 }
 
