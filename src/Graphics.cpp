@@ -1,15 +1,52 @@
 #include "Graphics.h"
+#include "Vertices.h"
 #include "Common.h"
+
+string getRendererCapsAsString()
+{
+	stringstream stringStream;
+
+	stringStream << "OpenGl Version: " << glGetString(GL_VERSION)<<"\n";
+	stringStream << "Vendor: " << glGetString(GL_VENDOR) << "\n";
+	stringStream << "Renderer: " << glGetString(GL_RENDERER) << "\n";
+	stringStream << "Shading: " << glGetString(GL_SHADING_LANGUAGE_VERSION) << "\n";
+	stringStream << "Extensions Supported\n";
+	GLint n = 0;
+	glGetIntegerv(GL_NUM_EXTENSIONS, &n);
+	for(GLint i = 0; i<n; i++)
+	{
+		const char* extension =
+			(const char*)glGetStringi(GL_EXTENSIONS, i);
+		stringStream << extension << ", ";
+	}
+
+	return stringStream.str();
+}
 
 //Function to initialise OpenGL
 void initOpenGL()
 {
+<<<<<<< HEAD
 	GLenum err = glewInit();
 	if (GLEW_OK != err)
 	{
 		/* Problem: glewInit failed, something is seriously wrong. */
 		std::cout << "Error: " << glewGetErrorString(err) << std::endl;
 	}
+=======
+	glewExperimental = GL_TRUE;
+	GLenum err = glewInit();
+	if (GLEW_OK != err)
+	{
+		//Problem: glewInit failed, something is seriously wrong.
+		std::cout << "Error: " << glewGetErrorString(err) << std::endl;
+	}
+
+	std::cout << getRendererCapsAsString() << endl;
+
+    //Smooth shading
+    glShadeModel( GL_SMOOTH );
+>>>>>>> refs/remotes/origin/master
 
 	//Smooth shading
 	glShadeModel(GL_SMOOTH);
@@ -60,4 +97,20 @@ void setViewport( int width, int height )
 
     //Reset using the Identity Matrix
     glLoadIdentity( );
+}
+
+void setCameraProperties(float xPos, float yPos, float zPos, float xLook, float yLook, float zLook, float xUp, float yUp, float zUp)
+{
+	glMatrixMode(GL_MODELVIEW);
+	gluLookAt(xPos, yPos, zPos, xLook, yLook, zLook, xUp, yUp, zUp);
+}
+
+
+GLuint createAndFillBuffer(Vertex *pVerts, int count)
+{
+  GLuint VBO;
+  glGenBuffers(1, &VBO);
+  glBindBuffer(GL_ARRAY_BUFFER, VBO);
+  glBufferData(GL_ARRAY_BUFFER, count * sizeof(Vertex), pVerts, GL_STATIC_DRAW);
+  return VBO;
 }
