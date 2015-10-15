@@ -16,5 +16,6 @@ target_link_libraries(GP2BaseCode ${SDL2_LIBRARY} ${OPENGL_LIBRARIES} ${GLEW_LIB
 if (MSVC)
 add_custom_command(TARGET GP2BaseCode  POST_BUILD
                    COMMAND ${CMAKE_COMMAND} -E copy_directory
-                       ${CMAKE_SOURCE_DIR}/dlls $<TARGET_FILE_DIR:GP2BaseCode>)
+                       ${CMAKE_SOURCE_DIR}/assets 
+					   $<TARGET_FILE_DIR:GP2BaseCode>/assets)
 endif (MSVC)
