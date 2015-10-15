@@ -9,14 +9,15 @@ GLuint loadShaderFromMemory(const char* pMem, SHADER_TYPE shaderType)
 	return program;
 }
 
-GLuint loadShaderFromFile(const std::string&, SHADER_TYPE shaderType)
+GLuint loadShaderFromFile(const std::string& filename, SHADER_TYPE shaderType)
 {
 	string fileContents;
 	ifstream file;
-	file.open(fileContents.c_str(), std::ios::in); //Lab 3 says filename.c_str() instead of fileContents.
+	file.open(filename.c_str(), std::ios::in); //Lab 3 says filename.c_str() instead of fileContents.
 	if (!file)
 	{
 		cout << "File could not be found" << endl;
+		return 0;
 	}
 
 	//Calculate file size
@@ -63,6 +64,8 @@ bool checkForCompileErrors(GLuint shaderProgram)
 		return true;
 
 	}
+
+	return false;
 }
 
 
