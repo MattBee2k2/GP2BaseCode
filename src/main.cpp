@@ -66,6 +66,8 @@ float zRotation=0.0f;
 GLuint VBO;
 GLuint EBO;
 
+GLuint shaderProgram = 0;
+
 void initScene()
 {
   glGenBuffers(1, &VBO);

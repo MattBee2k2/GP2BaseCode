@@ -40,3 +40,50 @@ GLuint loadShaderFromFile(const std::string&, SHADER_TYPE shaderType)
 
 	return 0;
 }
+
+bool checkForCompileErrors(GLuint shaderProgram)
+{
+	GLint isCompiled = 0;
+	glGetShaderiv(shaderProgram, GL_COMPILE_STATUS, &isCompiled);
+
+	if (isCompiled == GL_FALSE)
+	{
+		GLint maxLength = 0;
+		glGetShaderiv(shaderProgram, GL_INFO_LOG_LENGTH, &maxLength);
+
+		//The maxLength includes the NULL character
+		string infoLog;
+		infoLog.resize(maxLength);
+		glGetShaderInfoLog(shaderProgram, maxLength, &maxLength, &infoLog[0]);
+
+		cout << "Shader not compiled" << infoLog << endl;
+
+		//We don't need the shader anymore
+		glDeleteProgram(shaderProgram);
+		return true;
+	}
+}
+
+
+bool checkForLinkErrors(GLuint program)
+{
+	GLint isLinked = 0;
+	glGetProgramiv(program, GL_LINK_STATUS, &isLinked);
+
+	if (isLinked == GL_FALSE)
+	{
+		GLint maxLength = 0;
+		glGetProgramiv(program, GL_INFO_LOG_LENGTH, &maxLength);
+		//The maxLength includes the NULL character
+		string infoLog;
+		infoLog.resize(maxLength);
+
+		glGetShaderInfoLog(program, maxLength, &maxLength, &infoLog[0]);
+		cout << "Shader not linked" << infoLog << endl;
+		//We don't need the shader anymore
+		glDeleteProgram(program);
+		return true;
+	}
+
+	return false;
+}
