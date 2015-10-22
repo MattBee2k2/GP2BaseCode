@@ -15,6 +15,7 @@ using namespace std;
 
 const string ASSET_PATH = "assets";
 const string SHADER_PATH = "/shaders";
+const string TEXTURE_PATH = "/textures";
 
 //Maths headers
 #include <glm/glm.hpp>

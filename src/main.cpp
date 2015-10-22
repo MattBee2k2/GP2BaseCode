@@ -2,34 +2,35 @@
 #include "Graphics.h"
 #include "Vertices.h"
 #include "Shader.h"
+#include "Texture.h"
 
 Vertex verts[]={
 //Front
 { vec3(-0.5f, 0.5f, 0.5f),
-   vec4( 1.0f, 0.0f, 1.0f, 1.0f) },// Top Left
+   vec4( 1.0f, 0.0f, 1.0f, 1.0f), vec2(0.0f, 0.0f) },// Top Left
 
 	{ vec3(-0.5f, -0.5f, 0.5f),
-	vec4(1.0f, 1.0f, 0.0f, 1.0f) },// Bottom Left
+	vec4(1.0f, 1.0f, 0.0f, 1.0f), vec2(0.0f, 1.0f) },// Bottom Left
 
 	{ vec3(0.5f, -0.5f, 0.5f),
-	vec4(0.0f, 1.0f, 1.0f, 1.0f) }, //Bottom Right
+	vec4(0.0f, 1.0f, 1.0f, 1.0f), vec2(1.0f, 1.0f) }, //Bottom Right
 
 	{ vec3(0.5f, 0.5f, 0.5f),
-	vec4(1.0f, 0.0f, 1.0f, 1.0f) },// Top Right
+	vec4(1.0f, 0.0f, 1.0f, 1.0f), vec2(1.0f, 0.0f) },// Top Right
 
 
 //back
 	{ vec3(-0.5f, 0.5f, -0.5f),
-vec4(1.0f, 0.0f, 1.0f, 1.0f) },// Top Left
+	vec4(1.0f, 0.0f, 1.0f, 1.0f), vec2(0.0f, 0.0f) },// Top Left
 
 { vec3(-0.5f, -0.5f, -0.5f),
-vec4(1.0f, 1.0f, 0.0f, 1.0f) },// Bottom Left
+vec4(1.0f, 1.0f, 0.0f, 1.0f), vec2(0.0f, 1.0f) },// Bottom Left
 
 { vec3(0.5f, -0.5f, -0.5f),
-vec4(0.0f, 1.0f, 1.0f, 1.0f) }, //Bottom Right
+vec4(0.0f, 1.0f, 1.0f, 1.0f), vec2(1.0f, 1.0f) }, //Bottom Right
 
 { vec3(0.5f, 0.5f, -0.5f),
-vec4(1.0f, 0.0f, 1.0f, 1.0f) },// Top Right
+vec4(1.0f, 0.0f, 1.0f, 1.0f), vec2(1.0f, 0.0f) },// Top Right
 
 };
 
@@ -75,6 +76,8 @@ GLuint VAO;
 
 GLuint shaderProgram = 0;
 
+GLuint textureMap;
+
 void update()
 {
 	projMatrix = perspective(45.0f, 640.0f / 480.0f, 0.1f, 100.0f);
@@ -89,6 +92,10 @@ void update()
 
 void initScene()
 {
+	//load texture & bind
+	string texturePath = ASSET_PATH + TEXTURE_PATH + "/texture.png";
+	textureMap = loadTextureFromFile(texturePath);
+
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
 
@@ -107,6 +114,11 @@ void initScene()
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), NULL);
 
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void**)(sizeof(vec3)));
+
+	glEnableVertexAttribArray(2);
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void**)(sizeof(vec3) + sizeof(vec4)));
 
     GLuint vertexShaderProgram = 0;
     string vsPath = ASSET_PATH + SHADER_PATH + "/simpleVS.glsl";
@@ -134,6 +146,7 @@ void initScene()
 
 void cleanUp()
 {
+	glDeleteTextures(1, &textureMap);
 	glDeleteProgram(shaderProgram);
 	glDeleteBuffers(1, &EBO);
 	glDeleteVertexArrays(1, &VAO);
