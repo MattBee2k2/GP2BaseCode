@@ -96,6 +96,15 @@ void initScene()
 	string texturePath = ASSET_PATH + TEXTURE_PATH + "/texture.png";
 	textureMap = loadTextureFromFile(texturePath);
 
+	glBindTexture(GL_TEXTURE_2D, textureMap);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+	glGenerateMipmap(GL_TEXTURE_2D);
+
+
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
 
@@ -121,12 +130,12 @@ void initScene()
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void**)(sizeof(vec3) + sizeof(vec4)));
 
     GLuint vertexShaderProgram = 0;
-    string vsPath = ASSET_PATH + SHADER_PATH + "/simpleVS.glsl";
+    string vsPath = ASSET_PATH + SHADER_PATH + "/textureVS.glsl";
     vertexShaderProgram = loadShaderFromFile(vsPath, VERTEX_SHADER);
     checkForCompileErrors(vertexShaderProgram);
   
     GLuint fragmentShaderProgram = 0;
-    string fsPath = ASSET_PATH + SHADER_PATH + "/simpleFS.glsl";
+    string fsPath = ASSET_PATH + SHADER_PATH + "/textureFS.glsl";
     fragmentShaderProgram = loadShaderFromFile(fsPath, FRAGMENT_SHADER);
     checkForCompileErrors(fragmentShaderProgram);
   
@@ -141,6 +150,8 @@ void initScene()
     glDeleteShader(fragmentShaderProgram);
   
     glBindAttribLocation(shaderProgram, 0, "vertexPosition");
+	glBindAttribLocation(shaderProgram, 1, "vertexColour");
+	glBindAttribLocation(shaderProgram, 2, "vertexTexCoords");
 
 }
 
@@ -163,7 +174,10 @@ void render()
 	glUseProgram(shaderProgram);
 
 	GLint MVPLocation = glGetUniformLocation(shaderProgram, "MVP");
+	GLint texture0Location = glGetUniformLocation(shaderProgram, "texture0");
+
 	glUniformMatrix4fv(MVPLocation, 1, GL_FALSE, glm::value_ptr(MVPMatrix));
+	glUniform1i(texture0Location, 0);
 
 	glBindVertexArray(VAO);
 
