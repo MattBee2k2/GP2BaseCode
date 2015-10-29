@@ -5,6 +5,7 @@
 #include <string>
 #include <sstream>
 #include <fstream>
+#include <vector>
 
 using namespace std;
 
@@ -18,6 +19,7 @@ const string ASSET_PATH = "assets";
 const string SHADER_PATH = "/shaders";
 const string TEXTURE_PATH = "/textures";
 const string FONT_PATH = "/fonts";
+const string MODEL_PATH = "/models";
 
 //Maths headers
 #include <glm/glm.hpp>
