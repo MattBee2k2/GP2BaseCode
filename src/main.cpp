@@ -3,9 +3,11 @@
 #include "Vertices.h"
 #include "Shader.h"
 #include "Texture.h"
+#include "Mesh.h"
 #include "FileSystem.h"
+#include "FBXLoader.h"
 
-Vertex verts[]={
+/* Vertex verts[]={
 //Front
 { vec3(-0.5f, 0.5f, 0.5f),
    vec4( 1.0f, 0.0f, 1.0f, 1.0f), vec2(0.0f, 0.0f) },// Top Left
@@ -60,6 +62,8 @@ GLuint indices[]={
     4,5,6,
     4,7,6
 };
+*/
+
 
 //Matrices
 mat4 viewMatrix;
@@ -80,11 +84,13 @@ GLuint shaderProgram = 0;
 GLuint textureMap;
 GLuint fontTexture;
 
+MeshData currentMesh;
+
 void update()
 {
 	projMatrix = perspective(45.0f, 640.0f / 480.0f, 0.1f, 100.0f);
 
-	viewMatrix = lookAt(vec3(0.0f, 0.0f, 10.0f), vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f));
+	viewMatrix = lookAt(vec3(0.0f, 0.0f, 70.0f), vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f));
 
 	worldMatrix = translate(mat4(1.0f), vec3(0.0f, 0.0f, 0.0f));
 
@@ -94,6 +100,10 @@ void update()
 
 void initScene()
 {
+	string modelPath = ASSET_PATH + MODEL_PATH + "/armoredrecon.fbx";
+	loadFBXFromFile(modelPath, &currentMesh);
+
+
 	//load texture & bind
 	string texturePath = ASSET_PATH + TEXTURE_PATH + "/texture.png";
 	textureMap = loadTextureFromFile(texturePath);
@@ -117,17 +127,19 @@ void initScene()
 
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
-
     glGenBuffers(1, &VBO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_STATIC_DRAW);
+   // glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_STATIC_DRAW);
+
+	glBufferData(GL_ARRAY_BUFFER, currentMesh.getNumVerts()*sizeof(Vertex), &currentMesh.vertices[0], GL_STATIC_DRAW);
 
     //create buffer
     glGenBuffers(1, &EBO);
     //Make the EBO active
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     //Copy Index data to the EBO
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, currentMesh.getNumIndices()*sizeof(int), &currentMesh.indices[0], GL_STATIC_DRAW);
+   // glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
 	//Tell the shader that 0 is the position element
 	glEnableVertexAttribArray(0);
@@ -140,12 +152,12 @@ void initScene()
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void**)(sizeof(vec3) + sizeof(vec4)));
 
     GLuint vertexShaderProgram = 0;
-    string vsPath = ASSET_PATH + SHADER_PATH + "/textureVS.glsl";
+    string vsPath = ASSET_PATH + SHADER_PATH + "/simpleVS.glsl";
     vertexShaderProgram = loadShaderFromFile(vsPath, VERTEX_SHADER);
     checkForCompileErrors(vertexShaderProgram);
   
     GLuint fragmentShaderProgram = 0;
-    string fsPath = ASSET_PATH + SHADER_PATH + "/textureFS.glsl";
+    string fsPath = ASSET_PATH + SHADER_PATH + "/simpleFS.glsl";
     fragmentShaderProgram = loadShaderFromFile(fsPath, FRAGMENT_SHADER);
     checkForCompileErrors(fragmentShaderProgram);
   
@@ -189,17 +201,18 @@ void render()
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	GLint MVPLocation = glGetUniformLocation(shaderProgram, "MVP");
-	GLint texture0Location = glGetUniformLocation(shaderProgram, "texture0");
+//	GLint texture0Location = glGetUniformLocation(shaderProgram, "texture0");
 
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, fontTexture);
+//	glActiveTexture(GL_TEXTURE0);
+//	glBindTexture(GL_TEXTURE_2D, fontTexture);
 
 	glUniformMatrix4fv(MVPLocation, 1, GL_FALSE, glm::value_ptr(MVPMatrix));
-	glUniform1i(texture0Location, 0);
+//	glUniform1i(texture0Location, 0);
 
 	glBindVertexArray(VAO);
+	glDrawElements(GL_TRIANGLES, currentMesh.getNumIndices(), GL_UNSIGNED_INT, 0);
 
-    glDrawElements(GL_TRIANGLES, sizeof(indices)/sizeof(GLuint), GL_UNSIGNED_INT,0);
+   // glDrawElements(GL_TRIANGLES, sizeof(indices)/sizeof(GLuint), GL_UNSIGNED_INT,0);
 
 }
 
