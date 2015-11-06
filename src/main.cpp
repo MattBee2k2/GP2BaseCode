@@ -23,19 +23,92 @@ MeshData currentMesh;
 
 vec4 ambientMaterialColour = vec4(0.3f, 0.3f, 0.3f, 1.0f);
 vec4 ambientLightColour = vec4(1.0f, 1.0f, 1.0f, 1.0f);
-vec4 diffuseMaterialColour = vec4(0.3f, 0.3f, 0.3f, 1.0f);
+vec4 diffuseMaterialColour = vec4(0.6f, 0.6f, 0.6f, 1.0f);
 vec4 diffuseLightColour = vec4(1.0f, 1.0f, 1.0f, 1.0f);
 vec3 lightDirection = vec3(0.0f, 0.0f, 1.0f);
 vec4 specularLightColour = vec4(1.0f, 1.0f, 1.0f, 1.0f);
-vec4 specularMaterialColour = vec4(0.3f, 0.3f, 0.3f, 1.0f);
+vec4 specularMaterialColour = vec4(1.0f, 0.0f, 0.0f, 1.0f);
 float specularPower = 50.0f;
 
 vec3 cameraPosition = vec3(0.0f, 0.0f, 70.0f);
 
 
+GLuint FBOTexture;
+GLuint FBODepthBuffer;
+GLuint frameBufferObject;
+GLuint fullScreenVAO;
+GLuint fullScreenVBO;
+GLuint fulLScreenShaderProgram;
+
+const int FRAME_BUFFER_WIDTH = 640;
+const int FRAME_BUFFER_HEIGHT = 480;
+
+void createFrameBuffer()
+{
+	//Creating texture object
+	glActiveTexture(GL_TEXTURE0);
+	glGenTextures(1, &FBOTexture);
+	glBindTexture(GL_TEXTURE_2D, FBOTexture);
+
+	//Setting up initial states
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+
+	//Creating our Depth Buffer
+	glGenRenderbuffers(1, &FBODepthBuffer);
+	glBindRenderbuffer(GL_RENDERBUFFER, FBODepthBuffer);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT32, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT);
+	glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
+	//Creating our FrameBuffer Object
+	glGenFramebuffers(1, &frameBufferObject);
+	glBindFramebuffer(GL_FRAMEBUFFER, frameBufferObject);
+
+
+
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, FBOTexture, 0);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, FBODepthBuffer);
+
+	//Check buffer status
+
+	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+
+	if ((status != GL_FRAMEBUFFER_COMPLETE))
+	{
+		cout << "Issue with Framebuffers" << endl;
+	}
+
+
+	//Creating our quad to render to
+	float vertices[] =
+	{
+		-1, -1,
+		1, -1,
+		-1, 1,
+		1, 1
+	};
+
+	glGenVertexArrays(1, &fullScreenVAO);
+	glBindVertexArray(fullScreenVAO);
+	glGenBuffers(1, &fullScreenVBO);
+	glBindBuffer(GL_ARRAY_BUFFER, fullScreenVBO);
+
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, NULL);
+
+}
 
 void initScene()
 {
+	createFrameBuffer();
+
+
 
 	string modelPath = ASSET_PATH + MODEL_PATH + "/utah-teapot.fbx";
 	loadFBXFromFile(modelPath, &currentMesh);
