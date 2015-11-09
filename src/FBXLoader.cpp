@@ -38,7 +38,7 @@ FbxString GetAttributeTypeName(FbxNodeAttribute::EType type) {
 
 bool loadFBXFromFile(const string& filename, MeshData *meshData)
 {
-  level = 0;
+	level = 0;
 	// Initialize the SDK manager. This object handles memory management.
 	FbxManager* lSdkManager = FbxManager::Create();
 
@@ -60,8 +60,8 @@ bool loadFBXFromFile(const string& filename, MeshData *meshData)
 	// Import the contents of the file into the scene.
 	lImporter->Import(lScene);
 
-	FbxGeometryConverter IGeomConverter(lSdkManager);
-	IGeomConverter.Triangulate(lScene, true);
+	FbxGeometryConverter lGeomConverter(lSdkManager);
+	lGeomConverter.Triangulate(lScene, /*replace*/true);
 
 	// Print the nodes of the scene and their attributes recursively.
 	// Note that we are not printing the root node because it should
@@ -71,7 +71,7 @@ bool loadFBXFromFile(const string& filename, MeshData *meshData)
 		cout << "Root Node " << lRootNode->GetName() << endl;
 		for (int i = 0; i < lRootNode->GetChildCount(); i++)
 		{
-			processNode(lRootNode->GetChild(i),meshData);
+			processNode(lRootNode->GetChild(i), meshData);
 		}
 	}
 
@@ -83,7 +83,7 @@ void processNode(FbxNode *node, MeshData *meshData)
 {
 	PrintTabs();
 	const char* nodeName = node->GetName();
-	FbxDouble3 translation =  node->LclTranslation.Get();
+	FbxDouble3 translation = node->LclTranslation.Get();
 	FbxDouble3 rotation = node->LclRotation.Get();
 	FbxDouble3 scaling = node->LclScaling.Get();
 
@@ -94,12 +94,12 @@ void processNode(FbxNode *node, MeshData *meshData)
 	level++;
 	// Print the node's attributes.
 	for (int i = 0; i < node->GetNodeAttributeCount(); i++){
-		processAttribute(node->GetNodeAttributeByIndex(i),meshData);
+		processAttribute(node->GetNodeAttributeByIndex(i), meshData);
 	}
 
 	// Recursively print the children.
 	for (int j = 0; j < node->GetChildCount(); j++)
-		processNode(node->GetChild(j),meshData);
+		processNode(node->GetChild(j), meshData);
 	level--;
 	PrintTabs();
 }
@@ -131,7 +131,7 @@ void processMesh(FbxMesh * mesh, MeshData *meshData)
 	{
 		FbxVector4 currentVert = mesh->GetControlPointAt(i);
 		pVerts[i].position = vec3(currentVert[0], currentVert[1], currentVert[2]);
-		pVerts[i].colour= vec4(1.0f, 1.0f, 1.0f, 1.0f);
+		pVerts[i].colour = vec4(1.0f, 1.0f, 1.0f, 1.0f);
 		pVerts[i].texCoords = vec2(0.0f, 0.0f);
 	}
 
@@ -188,10 +188,8 @@ void processMeshTextureCoords(FbxMesh * mesh, Vertex * verts, int numVerts)
 
 void processMeshNormals(FbxMesh * mesh, Vertex * verts, int numVerts)
 {
-	for (int iPolygon = 0; iPolygon < mesh->GetPolygonCount(); iPolygon++)
-	{
-		for (unsigned iPolygonVertex = 0; iPolygonVertex < 3; iPolygonVertex++)
-		{
+	for (int iPolygon = 0; iPolygon < mesh->GetPolygonCount(); iPolygon++) {
+		for (unsigned iPolygonVertex = 0; iPolygonVertex < 3; iPolygonVertex++) {
 			int fbxCornerIndex = mesh->GetPolygonVertex(iPolygon, iPolygonVertex);
 			FbxVector4 fbxNormal;
 			mesh->GetPolygonVertexNormal(iPolygon, iPolygonVertex, fbxNormal);
@@ -199,7 +197,6 @@ void processMeshNormals(FbxMesh * mesh, Vertex * verts, int numVerts)
 			verts[fbxCornerIndex].normal.x = fbxNormal[0];
 			verts[fbxCornerIndex].normal.y = fbxNormal[1];
 			verts[fbxCornerIndex].normal.z = fbxNormal[2];
-		
 		}
 	}
 }

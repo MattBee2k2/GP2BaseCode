@@ -23,13 +23,15 @@ MeshData currentMesh;
 
 vec4 ambientMaterialColour = vec4(0.3f, 0.3f, 0.3f, 1.0f);
 vec4 ambientLightColour = vec4(1.0f, 1.0f, 1.0f, 1.0f);
+
 vec4 diffuseMaterialColour = vec4(0.6f, 0.6f, 0.6f, 1.0f);
 vec4 diffuseLightColour = vec4(1.0f, 1.0f, 1.0f, 1.0f);
-vec3 lightDirection = vec3(0.0f, 0.0f, 1.0f);
+
 vec4 specularLightColour = vec4(1.0f, 1.0f, 1.0f, 1.0f);
 vec4 specularMaterialColour = vec4(1.0f, 0.0f, 0.0f, 1.0f);
 float specularPower = 50.0f;
 
+vec3 lightDirection = vec3(0.0f, 0.0f, 1.0f);
 vec3 cameraPosition = vec3(0.0f, 0.0f, 70.0f);
 
 
@@ -38,8 +40,7 @@ GLuint FBODepthBuffer;
 GLuint frameBufferObject;
 GLuint fullScreenVAO;
 GLuint fullScreenVBO;
-GLuint fulLScreenShaderProgram;
-
+GLuint fullScreenShaderProgram;
 const int FRAME_BUFFER_WIDTH = 640;
 const int FRAME_BUFFER_HEIGHT = 480;
 
@@ -49,13 +50,11 @@ void createFrameBuffer()
 	glActiveTexture(GL_TEXTURE0);
 	glGenTextures(1, &FBOTexture);
 	glBindTexture(GL_TEXTURE_2D, FBOTexture);
-
 	//Setting up initial states
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 
 	//Creating our Depth Buffer
@@ -67,9 +66,6 @@ void createFrameBuffer()
 	//Creating our FrameBuffer Object
 	glGenFramebuffers(1, &frameBufferObject);
 	glBindFramebuffer(GL_FRAMEBUFFER, frameBufferObject);
-
-
-
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, FBOTexture, 0);
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, FBODepthBuffer);
 
@@ -94,21 +90,42 @@ void createFrameBuffer()
 
 	glGenVertexArrays(1, &fullScreenVAO);
 	glBindVertexArray(fullScreenVAO);
+
 	glGenBuffers(1, &fullScreenVBO);
 	glBindBuffer(GL_ARRAY_BUFFER, fullScreenVBO);
-
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, NULL);
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);
 
+	//Loading the shaders
+	GLuint vertexShaderProgram = 0;
+	string vsPath = ASSET_PATH + SHADER_PATH + "/simplePostProcessVS.glsl";
+	vertexShaderProgram = loadShaderFromFile(vsPath, VERTEX_SHADER);
+	checkForCompilerErrors(vertexShaderProgram);
+
+	GLuint fragmentShaderProgram = 0;
+	string fsPath = ASSET_PATH + SHADER_PATH + "/simplePostProcessFS.glsl";
+	fragmentShaderProgram = loadShaderFromFile(fsPath, FRAGMENT_SHADER);
+	checkForCompilerErrors(fragmentShaderProgram);
+
+	fullScreenShaderProgram = glCreateProgram();
+	glAttachShader(fullScreenShaderProgram, vertexShaderProgram);
+	glAttachShader(fullScreenShaderProgram, fragmentShaderProgram);
+	
+	//Link Attributes
+	glBindAttribLocation(fullScreenShaderProgram, 0, "vertexPosition");
+
+	glLinkProgram(fullScreenShaderProgram);
+	checkForLinkErrors(fullScreenShaderProgram);
+	//now we can delete the VS & FS Programs
+	glDeleteShader(vertexShaderProgram);
+	glDeleteShader(fragmentShaderProgram);
 }
 
 void initScene()
 {
 	createFrameBuffer();
-
-
 
 	string modelPath = ASSET_PATH + MODEL_PATH + "/utah-teapot.fbx";
 	loadFBXFromFile(modelPath, &currentMesh);
@@ -167,9 +184,19 @@ void initScene()
 	glDeleteShader(fragmentShaderProgram);
 }
 
+void cleanUpFramebuffer()
+{
+	glDeleteProgram(fullScreenShaderProgram);
+	glDeleteBuffers(1, &fullScreenVBO);
+	glDeleteVertexArrays(1, &fullScreenVAO);
+	glDeleteFramebuffers(1, &frameBufferObject);
+	glDeleteRenderbuffers(1, &FBODepthBuffer);
+	glDeleteTextures(1, &FBOTexture);
+}
+
 void cleanUp()
 {
-	//glDeleteTextures(1, &diffuseMap);
+	cleanUpFramebuffer();
 	glDeleteProgram(shaderProgram);
 	glDeleteBuffers(1, &EBO);
 	glDeleteBuffers(1, &VBO);
@@ -187,10 +214,10 @@ void update()
 	MVPMatrix = projMatrix*viewMatrix*worldMatrix;
 }
 
-
-void render()
+void renderScene()
 {
-	//old imediate mode!
+	glBindFramebuffer(GL_FRAMEBUFFER, frameBufferObject);
+
 	//Set the clear colour(background)
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	//clear the colour and depth buffer
@@ -218,7 +245,7 @@ void render()
 
 	GLint lightDirectionLocation = glGetUniformLocation(shaderProgram, "lightDirection");
 	glUniform3fv(lightDirectionLocation, 1, glm::value_ptr(lightDirection));
-	
+
 	GLint specularMaterialColourLocation = glGetUniformLocation(shaderProgram, "specularMaterialColour");
 	glUniform4fv(specularMaterialColourLocation, 1, glm::value_ptr(specularMaterialColour));
 
@@ -236,6 +263,34 @@ void render()
 	glBindVertexArray(VAO);
 
 	glDrawElements(GL_TRIANGLES, currentMesh.getNumIndices(), GL_UNSIGNED_INT, 0);
+}
+
+void renderPostProcessing()
+{
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	//Set the clear colour(background)
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	//clear the colour and depth buffer
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	glUseProgram(fullScreenShaderProgram);
+
+	GLint textureLocation = glGetUniformLocation(fullScreenShaderProgram, "texture0");
+	//GLint timeLocation = glGetUniformLocation(fullScreenShaderProgram, "time");
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, FBOTexture);
+	glUniform1i(textureLocation, 0);
+
+	glBindVertexArray(fullScreenVAO);
+
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+}
+
+void render()
+{
+	renderScene();
+	renderPostProcessing();
 }
 
 int main(int argc, char * arg[])

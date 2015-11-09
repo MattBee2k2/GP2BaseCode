@@ -64,7 +64,7 @@ GLuint convertSDLSurfaceToTexture(SDL_Surface * surface)
 		}
 	}
 	else{
-		cout<< "warning: the image is not truecolor.. this will	probably break";
+		cout << "warning: the image is not truecolor.. this will	probably break";
 		return 0;
 	}
 
