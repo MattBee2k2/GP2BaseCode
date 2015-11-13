@@ -1,5 +1,4 @@
 #include "GameObject.h"
-#include "Common.h"
 #include "Shader.h"
 
 GameObject::GameObject()
