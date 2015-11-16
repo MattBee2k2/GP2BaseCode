@@ -23,30 +23,27 @@ void initOpenGL()
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 }
 
+//Functiontoset/resetviewport
 void setViewport(int width, int height)
 {
-	//Screen ratio
+	//screenration
 	GLfloat ratio;
-
-	//make sure height is always above 1
+	//makesureheightisalwaysabove1
 	if (height == 0)
 	{
 		height = 1;
 	}
-
-	//Calculate screen ratio
+	//calculatescreenration
 	ratio = (GLfloat)width / (GLfloat)height;
-
-	//setup Viewport
+	//Setupviewport
 	glViewport(0, 0, (GLsizei)width, (GLsizei)height);
-
-	//Change to projection matrix mode
+	//Changetoprojectionmatrixmode
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-
-	//Switch to Modelview
+	//Calculateperspectivematrix,usingglulibraryfunctions
+	gluPerspective(45.0f, ratio, 0.1f, 100.0f);
+	//SwitchtoModelView
 	glMatrixMode(GL_MODELVIEW);
-
-	//Reset using the identity matrix
+	//ResetusingtheIdentityMatrix
 	glLoadIdentity();
-}
+}

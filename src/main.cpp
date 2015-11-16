@@ -1,34 +1,43 @@
 #include "Common.h"
 #include "Graphics.h"
 
+float x, y, z = (-1.0f, 0.0f, -5.0f);
+
+
 void render()
 {
 	//Set the clea colour(background)
-	glClearColor(1.0f, 0.0f, 0.0f, 0.0f);
+	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	
 	//Clear the colour and depth buffer
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	//Switch to ModelView
+	//SwitchtoModelView
 	glMatrixMode(GL_MODELVIEW);
-	//Reset using the identity matrix
+	//ResetusingtheIdentityMatrix
 	glLoadIdentity();
-	//Translate to -5.0f on z-axis
-	glTranslatef(0.0f, 0.0f, -5.0f);
-	//Begin drawing triangles
+	//Translateto-5.0fonz-axis
+	glTranslatef(x, y, z);
+	//Begindrawingtriangles
 	glBegin(GL_TRIANGLES);
-			glColor3f(1.0f, 0.0f, 0.0f); //Colour of the vertices
-			glVertex3f(0.0f, 1.0f, 0.0f); //Top
-			glVertex3f(-1.0f, -1.0f, 0.0f); //Bottom Left
-			glVertex3f(1.0f, -1.0f, 0.0f); //Bottom Right
+	glColor3f(1.0f, 0.0f, 0.0f);//Colourofthevertices
+	glVertex3f(-1.0f, 1.0f, 0.0f);//Top
+	glColor3f(0.0f, 1.0f, 0.0f);
+	glVertex3f(-1.0f, -1.0f, 0.0f);//BottomLeft
+	glColor3f(0.0f, 0.0f, 1.0f);
+	glVertex3f(1.0f, -1.0f, 0.0f);//BottomRight
 	glEnd();
 
-	/*glBegin(GL_TRIANGLES);
+
+	glLoadIdentity();
+	x = 1.0f;
+	glTranslatef(x, y, z);
+	glBegin(GL_TRIANGLES);
 	glColor3f(1.0f, 0.0f, 0.0f); //Colour of the vertices
 	glVertex3f(1.0f, 1.0f, 0.0f); //Top
 	glVertex3f(-1.0f, -1.0f, 0.0f); //Bottom Left
 	glVertex3f(1.0f, -1.0f, 0.0f); //Bottom Right
-	glEnd();*/
+	glEnd();
 
 }
 
