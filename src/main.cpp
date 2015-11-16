@@ -1,6 +1,22 @@
 #include "Common.h"
 #include "Graphics.h"
 
+float verts[] = { 0.0f, 1.0f, 0.0f, //Top
+				-1.0f, -1.0f, 0.0f, // bottom left
+				 1.0f, -1.0f, 0.0f };
+
+GLuint VBO;
+
+void initScene()
+{
+	//Create Buffer
+	glGenBuffers(1, &VBO);
+	//Make the new VBO Active
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	//Copy Vertex Data to VBO
+	glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_STATIC_DRAW);
+}
+
 void update()
 {
 }
@@ -13,6 +29,13 @@ void render()
     //clear the colour and depth buffer
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
+	//Make the new VBO actve. Repeate here as a sanity check(may have changed since initialisation
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	//Establish its 3 coordiantes per vertex with zero stride(space between elemtns) in array containing floating point numbers
+	glVertexPointer(3, GL_FLOAT, 0, NULL);
+	//Establish array contains vertices(not normals, colours, texture coords etc)
+	glEnableClientState(GL_VERTEX_ARRAY);
+
     //Swith to ModelView
     glMatrixMode( GL_MODELVIEW );
     //Reset using the Indentity Matrix
@@ -21,15 +44,9 @@ void render()
     //on z-zaxis
     //Everyting after this will be drawn at -5.0f on z-axis
     //until reset by glLoadIdentity!
-    glTranslatef( 0.0f, 0.0f, -5.0f );
-
-    //Begin drawing triangles
-    glBegin( GL_TRIANGLES );
-      glColor3f(1.0f, 0.0f, 0.0f); //Colour of the vertices
-      glVertex3f(  0.0f,  1.0f, 0.0f ); // Top
-      glVertex3f( -1.0f, -1.0f, 0.0f ); // Bottom Left
-      glVertex3f(  1.0f, -1.0f, 0.0f ); // Bottom Right
-    glEnd( );
+    glTranslatef( 0.0f, 0.0f, -6.0f );
+	//Actually draw the triangle, given the number of vertices provided
+	glDrawArrays(GL_TRIANGLES, 0, sizeof(verts) / (3 * sizeof(float)));
 
 }
 
@@ -61,6 +78,9 @@ int main(int argc, char * arg[])
     //Initialisation
     //Call our InitOpenGL Function
     initOpenGL();
+
+	initScene();
+	
     //Set our viewport
     setViewport(640,480);
 
@@ -100,9 +120,15 @@ int main(int argc, char * arg[])
     }
 
     // clean up, reverse order!!!
+	cleanUp();
     SDL_GL_DeleteContext(glcontext);
     SDL_DestroyWindow(window);
     SDL_Quit();
 
     return 0;
+}
+
+void cleanUp()
+{
+	glDeleteBuffers(1, &VBO);
 }
