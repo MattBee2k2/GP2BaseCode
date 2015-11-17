@@ -14,28 +14,15 @@ shared_ptr<GameObject> gameObject;
 //matrices
 mat4 viewMatrix;
 mat4 projMatrix;
-mat4 worldMatrix;
+
 mat4 MVPMatrix;
 
-GLuint VBO;
-GLuint EBO;
-GLuint VAO;
-GLuint shaderProgram;
-
-MeshData currentMesh;
-
 vec4 ambientLightColour=vec4(1.0f,1.0f,1.0f,1.0f);
-vec4 ambientMaterialColour = vec4(0.2f, 0.2f, 0.2f, 1.0f);
-
 vec4 diffuseLightColour=vec4(1.0f,1.0f,1.0f,1.0f);
-vec4 diffuseMaterialColour=vec4(1.0f,0.0f,0.0f,1.0f);
-
 vec4 specularLightColour=vec4(1.0f,1.0f,1.0f,1.0f);
-vec4 specularMaterialColour=vec4(1.0f,1.0f,1.0f,1.0f);
-float specularPower=25.0f;
 
 vec3 lightDirection=vec3(0.0f,0.0f,1.0f);
-vec3 cameraPosition=vec3(0.0f,10.0f,50.0f);
+vec3 cameraPosition=vec3(0.0f,0.0f,10.0f);
 
 //for Framebuffer
 GLuint FBOTexture;
@@ -44,7 +31,6 @@ GLuint frameBufferObject;
 GLuint fullScreenVAO;
 GLuint fullScreenVBO;
 GLuint fullScreenShaderProgram;
-
 const int FRAME_BUFFER_WIDTH = 640;
 const int FRAME_BUFFER_HEIGHT = 480;
 
@@ -127,7 +113,6 @@ void createFramebuffer()
 
 void initScene()
 {
-	createFramebuffer();
 	gameObject = shared_ptr<GameObject>(new GameObject);
 	gameObject->createBuffer(cubeVerts, numberOfCubeVerts, cubeIndices, numberOfCubeIndices);
 
@@ -135,6 +120,7 @@ void initScene()
 	string fsPath = ASSET_PATH + SHADER_PATH + "/simpleFS.glsl";
 	gameObject->loadShader(vsPath, fsPath);
 
+	createFramebuffer();
 }
 
 void cleanUpFramebuffer()
@@ -149,11 +135,7 @@ void cleanUpFramebuffer()
 
 void cleanUp()
 {
-	cleanUpFramebuffer();
-	glDeleteProgram(shaderProgram);
-	glDeleteBuffers(1, &EBO);
-	glDeleteBuffers(1, &VBO);
-	glDeleteVertexArrays(1, &VAO);
+	gameObject -> ~GameObject();
 }
 
 void update()
@@ -174,44 +156,17 @@ void renderScene()
 	//clear the colour and depth buffer
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	MVPMatrix = projMatrix * viewMatrix * gameObject->getModelMatrix();
+
 	GLuint currentShaderProgram = gameObject->getShaderProgram();
-	glUseProgram(shaderProgram);
+	glUseProgram(currentShaderProgram);
 
-	GLint MVPLocation = glGetUniformLocation(shaderProgram, "MVP");
-
+	GLint MVPLocation = glGetUniformLocation(currentShaderProgram, "MVP");
 	glUniformMatrix4fv(MVPLocation, 1, GL_FALSE, value_ptr(MVPMatrix));
 
-	GLint ambientLightColourLocation = glGetUniformLocation(shaderProgram, "ambientLightColour");
-	GLint ambientMaterialColourLocation = glGetUniformLocation(shaderProgram, "ambientMaterialColour");
+	glBindVertexArray(gameObject->getVertexArrayObject());
 
-	GLint diffuseLightColourLocation = glGetUniformLocation(shaderProgram, "diffuseLightColour");
-	GLint diffuseLightMaterialLocation = glGetUniformLocation(shaderProgram, "diffuseMaterialColour");
-	GLint lightDirectionLocation = glGetUniformLocation(shaderProgram, "lightDirection");
-
-	GLint specularLightColourLocation = glGetUniformLocation(shaderProgram, "specularLightColour");
-	GLint specularLightMaterialLocation = glGetUniformLocation(shaderProgram, "specularMaterialColour");
-	GLint specularPowerLocation = glGetUniformLocation(shaderProgram, "specularPower");
-	GLint cameraPositionLocation = glGetUniformLocation(shaderProgram, "cameraPosition");
-
-	GLint modelLocation = glGetUniformLocation(shaderProgram, "Model");
-	glUniformMatrix4fv(modelLocation, 1, GL_FALSE, value_ptr(worldMatrix));
-
-	glUniform4fv(ambientLightColourLocation, 1, value_ptr(ambientLightColour));
-	glUniform4fv(ambientMaterialColourLocation, 1, value_ptr(ambientMaterialColour));
-
-	glUniform4fv(diffuseLightColourLocation, 1, value_ptr(diffuseLightColour));
-	glUniform4fv(diffuseLightMaterialLocation, 1, value_ptr(diffuseMaterialColour));
-	glUniform3fv(lightDirectionLocation, 1, value_ptr(lightDirection));
-
-	glUniform4fv(specularLightColourLocation, 1, value_ptr(specularLightColour));
-	glUniform4fv(specularLightMaterialLocation, 1, value_ptr(specularMaterialColour));
-	glUniform1f(specularPowerLocation, specularPower);
-	glUniform3fv(cameraPositionLocation, 1, value_ptr(cameraPosition));
-
-
-	glBindVertexArray(VAO);
-
-	glDrawElements(GL_TRIANGLES, currentMesh.getNumIndices(), GL_UNSIGNED_INT, 0);
+	glDrawElements(GL_TRIANGLES, gameObject->getNumberOfIndices(), GL_UNSIGNED_INT, 0);
 }
 
 void renderPostProcessing()

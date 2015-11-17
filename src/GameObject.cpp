@@ -18,23 +18,9 @@ GameObject::GameObject()
 	m_AmbientMaterial = vec4(0.2f, 0.2f, 0.2f, 1.0f);
 	m_DiffuseMaterial = vec4(0.6f, 0.6f, 0.6f, 1.0f);
 	m_SpecularMaterial = vec4(1.0f, 1.0f, 1.0f, 1.0f);
-	m_SpecularPower = 0.0f;
+	m_SpecularPower = 20.0f;
 }
 
-GLuint GameObject::getShaderProgram()
-{
-	return m_ShaderProgram;
-}
-
-GLuint GameObject::getVertexArrayObject()
-{
-	return m_VAO;
-}
-
-int GameObject::getNumberOfIndices()
-{
-	return m_NoOfIndices;
-}
 
 GameObject::~GameObject()
 {
@@ -51,7 +37,6 @@ void GameObject::update()
 	mat4 rotationMatrix = rotate(mat4(1.0f), m_Rotation.x, vec3(1.0f, 0.0f, 0.0f)) * rotate(mat4(1.0f), m_Rotation.y, vec3(0.0f, 1.0f, 0.0f)) * rotate(mat4(1.0f), m_Rotation.z, vec3(0.0f, 0.0f, 1.0f));
 
 	m_ModelMatrix = scaleMatrix * rotationMatrix * translationMatrix;
-
 }
 
 void GameObject::createBuffer(Vertex *pVerts, int numVerts, int *pindices, int numIndices)
