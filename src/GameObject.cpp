@@ -21,6 +21,21 @@ GameObject::GameObject()
 	m_SpecularPower = 0.0f;
 }
 
+GLuint GameObject::getShaderProgram()
+{
+	return m_ShaderProgram;
+}
+
+GLuint GameObject::getVertexArrayObject()
+{
+	return m_VAO;
+}
+
+int GameObject::getNumberOfIndices()
+{
+	return m_NoOfIndices;
+}
+
 GameObject::~GameObject()
 {
 	glDeleteProgram(m_ShaderProgram);
@@ -41,6 +56,9 @@ void GameObject::update()
 
 void GameObject::createBuffer(Vertex *pVerts, int numVerts, int *pindices, int numIndices)
 {
+	m_NoOfVertices = numVerts;
+	m_NoOfIndices = numIndices;
+
 	//Generate Vertex Array
 	glGenVertexArrays(1, &m_VAO);
 	glBindVertexArray(m_VAO);
@@ -49,7 +67,7 @@ void GameObject::createBuffer(Vertex *pVerts, int numVerts, int *pindices, int n
 
 	glBufferData(GL_ARRAY_BUFFER, numVerts*sizeof(Vertex), pVerts, GL_STATIC_DRAW);
 
-	//create buffer
+	//Generate Element buffer object
 	glGenBuffers(1, &m_EBO);
 	//Make the EBO active
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);

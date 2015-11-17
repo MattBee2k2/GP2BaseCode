@@ -93,7 +93,7 @@ void createFramebuffer()
 
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(
-		0,  // attribute
+		0,					// attribute
 		2,                  // number of elements per vertex, here (x,y)
 		GL_FLOAT,           // the type of each element
 		GL_FALSE,           // take our values as-is
@@ -129,7 +129,7 @@ void initScene()
 {
 	createFramebuffer();
 	gameObject = shared_ptr<GameObject>(new GameObject);
-	gameObject->createBuffer(cubeVerts, 8, cubeIndices, 36);
+	gameObject->createBuffer(cubeVerts, numberOfCubeVerts, cubeIndices, numberOfCubeIndices);
 
 	string vsPath = ASSET_PATH + SHADER_PATH + "/simpleVS.glsl";
 	string fsPath = ASSET_PATH + SHADER_PATH + "/simpleFS.glsl";
