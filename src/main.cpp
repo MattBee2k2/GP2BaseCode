@@ -8,13 +8,12 @@
 #include "FileSystem.h"
 #include "GameObject.h"
 #include "Cube.h"
+#include <Camera.h>
 
 shared_ptr<GameObject> gameObject;
+shared_ptr<Camera> camera;
 
 //matrices
-mat4 viewMatrix;
-mat4 projMatrix;
-
 mat4 MVPMatrix;
 
 vec4 ambientLightColour=vec4(1.0f,1.0f,1.0f,1.0f);
@@ -22,7 +21,6 @@ vec4 diffuseLightColour=vec4(1.0f,1.0f,1.0f,1.0f);
 vec4 specularLightColour=vec4(1.0f,1.0f,1.0f,1.0f);
 
 vec3 lightDirection=vec3(0.0f,0.0f,1.0f);
-vec3 cameraPosition=vec3(0.0f,0.0f,10.0f);
 
 //for Framebuffer
 GLuint FBOTexture;
@@ -140,9 +138,8 @@ void cleanUp()
 
 void update()
 {
-	projMatrix = perspective(45.0f, 640.0f / 480.0f, 0.1f, 100.0f);
-
-	viewMatrix = lookAt(cameraPosition, vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f));
+	camera = shared_ptr<Camera>(new Camera);
+	camera->onUpdate();
 
 	gameObject->update();
 
@@ -156,7 +153,7 @@ void renderScene()
 	//clear the colour and depth buffer
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	MVPMatrix = projMatrix * viewMatrix * gameObject->getModelMatrix();
+	MVPMatrix = camera->getProjMatrix() * camera->getViewMatrix() * gameObject->getModelMatrix();
 
 	GLuint currentShaderProgram = gameObject->getShaderProgram();
 	glUseProgram(currentShaderProgram);
