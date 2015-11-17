@@ -10,8 +10,8 @@
 #include "Cube.h"
 #include <Camera.h>
 
-shared_ptr<GameObject> gameObject;
-shared_ptr<Camera> camera;
+shared_ptr<GameObject> gameObject = shared_ptr<GameObject>(new GameObject);
+shared_ptr<Camera> camera = shared_ptr<Camera>(new Camera);
 
 //matrices
 mat4 MVPMatrix;
@@ -111,7 +111,6 @@ void createFramebuffer()
 
 void initScene()
 {
-	gameObject = shared_ptr<GameObject>(new GameObject);
 	gameObject->createBuffer(cubeVerts, numberOfCubeVerts, cubeIndices, numberOfCubeIndices);
 
 	string vsPath = ASSET_PATH + SHADER_PATH + "/simpleVS.glsl";
@@ -134,11 +133,11 @@ void cleanUpFramebuffer()
 void cleanUp()
 {
 	gameObject -> ~GameObject();
+	camera -> ~Camera();
 }
 
 void update()
 {
-	camera = shared_ptr<Camera>(new Camera);
 	camera->onUpdate();
 
 	gameObject->update();
