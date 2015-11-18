@@ -1,6 +1,7 @@
 #include "Graphics.h"
 #include "Common.h"
 
+
 //Function to initialise OpenGL
 void initOpenGL()
 {

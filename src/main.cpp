@@ -1,11 +1,68 @@
 #include "Common.h"
 #include "Graphics.h"
+#include "Vertex.h"
+#include "SDL_keyboard.h"
+#include "SDL_keycode.h"
 
-float verts[] = { 0.0f, 1.0f, 0.0f, //Top
-				-1.0f, -1.0f, 0.0f, // bottom left
-				 1.0f, -1.0f, 0.0f };
+Vertex verts[] = 
+//Front
+{{ -0.5f, 0.5f, 0.5f,
+1.0f, 0.0f, 1.0f, 1.0f },// Top Left
+
+{ -0.5f, -0.5f, 0.5f,
+1.0f, 1.0f, 0.0f, 1.0f },// Bottom Left
+
+{ 0.5f, -0.5f, 0.5f,
+0.0f, 1.0f, 1.0f, 1.0f }, //Bottom Right
+
+{ 0.5f, 0.5f, 0.5f,
+1.0f, 0.0f, 1.0f, 1.0f },// Top Right
+
+
+//back
+{ -0.5f, 0.5f, -0.5f,
+1.0f, 0.0f, 1.0f, 1.0f },// Top Left
+
+{ -0.5f, -0.5f, -0.5f,
+1.0f, 1.0f, 0.0f, 1.0f },// Bottom Left
+
+{ 0.5f, -0.5f, -0.5f,
+0.0f, 1.0f, 1.0f, 1.0f }, //Bottom Right
+
+{ 0.5f, 0.5f, -0.5f,
+1.0f, 0.0f, 1.0f, 1.0f },// Top Right
+
+};
+				 
+GLuint indices[] = {
+	//front
+	0, 1, 2,
+	0, 3, 2,
+
+	//left
+	4, 5, 1,
+	4, 1, 0,
+
+	//right
+	3, 7, 2,
+	7, 6, 2,
+
+	//bottom
+	1, 5, 2,
+	6, 2, 5,
+
+	//top
+	4, 0, 7,
+	0, 7, 3,
+
+	//back
+	4, 5, 6,
+	4, 7, 6
+};
 
 GLuint VBO;
+GLuint EBO;
+
 
 void initScene()
 {
@@ -15,10 +72,25 @@ void initScene()
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	//Copy Vertex Data to VBO
 	glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_STATIC_DRAW);
+
+	//Create buffer
+	glGenBuffers(1, &EBO);
+	//Make the EBO Active
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	//Copy Index data to the EBO
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 }
 
 void update()
 {
+
+}
+
+
+void cleanUp()
+{
+	glDeleteBuffers(1, &EBO);
+	glDeleteBuffers(1, &VBO);
 }
 
 void render()
@@ -31,22 +103,32 @@ void render()
 
 	//Make the new VBO actve. Repeate here as a sanity check(may have changed since initialisation
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	//Establish its 3 coordiantes per vertex with zero stride(space between elemtns) in array containing floating point numbers
-	glVertexPointer(3, GL_FLOAT, 0, NULL);
+	glVertexPointer(3, GL_FLOAT, sizeof(Vertex), NULL);
+	//The last parameter says that the colours start 3 floats into each element of the array
+	glColorPointer(4, GL_FLOAT, sizeof(Vertex), (void**)(3 * sizeof(float)));
+
 	//Establish array contains vertices(not normals, colours, texture coords etc)
 	glEnableClientState(GL_VERTEX_ARRAY);
+	glEnableClientState(GL_COLOR_ARRAY);
 
     //Swith to ModelView
     glMatrixMode( GL_MODELVIEW );
     //Reset using the Indentity Matrix
     glLoadIdentity( );
+
+	gluLookAt(0.0, 0.0, 6.0, 0.0, 0.0, -1.0f, 0.0, 1.0, 0.0);
     //Do translation, push the next bit of drawing 'back' 5 units
     //on z-zaxis
     //Everyting after this will be drawn at -5.0f on z-axis
     //until reset by glLoadIdentity!
     glTranslatef( 0.0f, 0.0f, -6.0f );
 	//Actually draw the triangle, given the number of vertices provided
-	glDrawArrays(GL_TRIANGLES, 0, sizeof(verts) / (3 * sizeof(float)));
+	glDrawElements(GL_TRIANGLES, sizeof(indices) / (sizeof(GLuint)), GL_UNSIGNED_INT, 0);
+	glTranslatef(1.5f, 0.0f, 0.0f);
+	glScalef(1.0f, -1.0f, 1.0f);
+	glDrawElements(GL_TRIANGLES, sizeof(indices) / (sizeof(GLuint)), GL_UNSIGNED_INT, 0);
 
 }
 
@@ -128,7 +210,3 @@ int main(int argc, char * arg[])
     return 0;
 }
 
-void cleanUp()
-{
-	glDeleteBuffers(1, &VBO);
-}
