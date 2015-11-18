@@ -13,6 +13,7 @@ public:
 	~GameObject();
 
 	void update();
+
 	void createBuffer(Vertex *pVerts, int numVerts, int *pindices, int numIndices);
 	void loadShader(const string& vsFilename, const string& fsFilename);
 
@@ -36,6 +37,42 @@ public:
 		return m_ModelMatrix;
 	};
 
+	void setPosition(const vec3& position)
+	{
+		m_Position = position;
+	};
+
+	void setScale(const vec3& scale)
+	{
+		m_Scale = scale;
+	};
+
+	void setRotation(const vec3& rotation)
+	{
+		m_Rotation = rotation;
+	};
+
+	GameObject * getParent()
+	{
+		return m_ParentGameObject;
+	};
+
+	int getNumberOfChildren()
+	{
+		return  m_ChildGameObjects.size();
+	};
+
+	void addChild(shared_ptr<GameObject> child)
+	{
+		this->m_ParentGameObject;
+		 m_ChildGameObjects.push_back(child);
+	};
+
+	shared_ptr<GameObject> getChild(int i)
+	{
+		return m_ChildGameObjects.at(i);
+	}
+
 private:
 	GLuint m_VBO;
 	GLuint m_EBO;
@@ -53,6 +90,9 @@ private:
 	vec4 m_DiffuseMaterial;
 	vec4 m_SpecularMaterial;
 	float m_SpecularPower;
+
+	GameObject * m_ParentGameObject;
+	vector <shared_ptr<GameObject>>   m_ChildGameObjects;
 
 protected:
 

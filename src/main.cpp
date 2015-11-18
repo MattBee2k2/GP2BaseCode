@@ -32,6 +32,35 @@ GLuint fullScreenShaderProgram;
 const int FRAME_BUFFER_WIDTH = 640;
 const int FRAME_BUFFER_HEIGHT = 480;
 
+GLuint currentShaderProgram = 0;
+
+
+void renderGameObject(shared_ptr<GameObject> currentGameObject)
+{
+	MVPMatrix = camera->getProjMatrix() * camera->getViewMatrix() * currentGameObject->getModelMatrix();
+
+	if (gameObject->getShaderProgram() > 0)
+	{
+		currentShaderProgram = currentGameObject->getShaderProgram();
+		glUseProgram(currentShaderProgram);
+	}
+
+	GLuint currentShaderProgram = currentGameObject->getShaderProgram();
+	glUseProgram(currentShaderProgram);
+
+	GLint MVPLocation = glGetUniformLocation(currentShaderProgram, "MVP");
+	glUniformMatrix4fv(MVPLocation, 1, GL_FALSE, value_ptr(MVPMatrix));
+
+	glBindVertexArray(currentGameObject->getVertexArrayObject());
+
+	glDrawElements(GL_TRIANGLES, currentGameObject->getNumberOfIndices(), GL_UNSIGNED_INT, 0);
+
+	for (int i = 0; i < currentGameObject->getNumberOfChildren(); i++)
+	{
+		renderGameObject(currentGameObject->getChild(i));
+	}
+
+}
 
 void createFramebuffer()
 {
@@ -151,18 +180,6 @@ void renderScene()
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	//clear the colour and depth buffer
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	MVPMatrix = camera->getProjMatrix() * camera->getViewMatrix() * gameObject->getModelMatrix();
-
-	GLuint currentShaderProgram = gameObject->getShaderProgram();
-	glUseProgram(currentShaderProgram);
-
-	GLint MVPLocation = glGetUniformLocation(currentShaderProgram, "MVP");
-	glUniformMatrix4fv(MVPLocation, 1, GL_FALSE, value_ptr(MVPMatrix));
-
-	glBindVertexArray(gameObject->getVertexArrayObject());
-
-	glDrawElements(GL_TRIANGLES, gameObject->getNumberOfIndices(), GL_UNSIGNED_INT, 0);
 }
 
 void renderPostProcessing()

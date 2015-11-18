@@ -19,6 +19,9 @@ GameObject::GameObject()
 	m_DiffuseMaterial = vec4(0.6f, 0.6f, 0.6f, 1.0f);
 	m_SpecularMaterial = vec4(1.0f, 1.0f, 1.0f, 1.0f);
 	m_SpecularPower = 20.0f;
+
+	m_ParentGameObject = NULL;
+	m_ChildGameObjects.clear();
 }
 
 
@@ -28,6 +31,7 @@ GameObject::~GameObject()
 	glDeleteBuffers(1, &m_EBO);
 	glDeleteBuffers(1, &m_VBO);
 	glDeleteVertexArrays(1, &m_VAO);
+	m_ChildGameObjects.clear();
 }
 
 void GameObject::update()
@@ -35,8 +39,20 @@ void GameObject::update()
 	mat4 translationMatrix = translate(mat4(1.0f), m_Position);
 	mat4 scaleMatrix = scale(mat4(1.0f), m_Scale);
 	mat4 rotationMatrix = rotate(mat4(1.0f), m_Rotation.x, vec3(1.0f, 0.0f, 0.0f)) * rotate(mat4(1.0f), m_Rotation.y, vec3(0.0f, 1.0f, 0.0f)) * rotate(mat4(1.0f), m_Rotation.z, vec3(0.0f, 0.0f, 1.0f));
+	
+	mat4 parentModel = mat4(1.0f);
+	if (m_ParentGameObject)
+	{
+		parentModel = m_ParentGameObject->getModelMatrix();
+	}
 
 	m_ModelMatrix = scaleMatrix * rotationMatrix * translationMatrix;
+	m_ModelMatrix *= parentModel;
+
+	for (auto iter = m_ChildGameObjects.begin(); iter !=  m_ChildGameObjects.end(); iter++)
+	{
+		(*iter)->update();
+	}
 }
 
 void GameObject::createBuffer(Vertex *pVerts, int numVerts, int *pindices, int numIndices)
