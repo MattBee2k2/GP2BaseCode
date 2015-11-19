@@ -9,9 +9,11 @@
 #include "GameObject.h"
 #include "Cube.h"
 #include <Camera.h>
+#include <Light.h>
 
 shared_ptr<GameObject> gameObject = shared_ptr<GameObject>(new GameObject);
 shared_ptr<Camera> camera = shared_ptr<Camera>(new Camera);
+shared_ptr<Light> light = shared_ptr<Light>(new Light);
 
 //matrices
 mat4 MVPMatrix;
@@ -174,6 +176,8 @@ void renderScene()
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	//clear the colour and depth buffer
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	light->setUpLight(currentShaderProgram);
 }
 
 void renderPostProcessing()
