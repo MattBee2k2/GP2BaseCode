@@ -16,12 +16,6 @@ shared_ptr<Camera> camera = shared_ptr<Camera>(new Camera);
 //matrices
 mat4 MVPMatrix;
 
-vec4 ambientLightColour=vec4(1.0f,1.0f,1.0f,1.0f);
-vec4 diffuseLightColour=vec4(1.0f,1.0f,1.0f,1.0f);
-vec4 specularLightColour=vec4(1.0f,1.0f,1.0f,1.0f);
-
-vec3 lightDirection=vec3(0.0f,0.0f,1.0f);
-
 //for Framebuffer
 GLuint FBOTexture;
 GLuint FBODepthBuffer;
