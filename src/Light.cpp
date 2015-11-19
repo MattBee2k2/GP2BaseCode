@@ -1,4 +1,5 @@
 #include "Light.h"
+#include "Common.h"
 
 Light::Light()
 {
@@ -9,6 +10,10 @@ Light::Light()
 	vec3 m_LightDirection = vec3(0.0f, 0.0f, 1.0f);
 }
 
+Light::~Light()
+{
+
+}
 
 void Light::setUpLight(GLuint currentShaderProgram)
 {

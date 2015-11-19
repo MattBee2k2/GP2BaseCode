@@ -18,7 +18,7 @@ GameObject::GameObject()
 	m_AmbientMaterial = vec4(0.2f, 0.2f, 0.2f, 1.0f);
 	m_DiffuseMaterial = vec4(0.6f, 0.6f, 0.6f, 1.0f);
 	m_SpecularMaterial = vec4(1.0f, 1.0f, 1.0f, 1.0f);
-	m_SpecularPower = 20.0f;
+	m_SpecularPower = 120.0f;
 
 	m_ParentGameObject = NULL;
 	m_ChildGameObjects.clear();

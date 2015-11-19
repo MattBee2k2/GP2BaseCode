@@ -1,5 +1,5 @@
-#ifndef _LIGHT_
-#define _LIGHT_
+#ifndef _LIGHT_H
+#define _LIGHT_H
 
 #include "Common.h"
 
@@ -11,10 +11,7 @@ public:
 	Light();
 	~Light();
 
-	void setUpLight(GLuint currentShaderProgram)
-	{
-
-	};
+	void setUpLight(GLuint currentShaderProgram);
 
 	void setAmbientLightColour(vec4 ambientLightColour)
 	{

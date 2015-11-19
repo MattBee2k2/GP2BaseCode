@@ -35,7 +35,7 @@ void renderGameObject(shared_ptr<GameObject> currentGameObject)
 {
 	MVPMatrix = camera->getProjMatrix() * camera->getViewMatrix() * currentGameObject->getModelMatrix();
 
-	if (gameObject->getShaderProgram() > 0)
+	if (currentGameObject->getShaderProgram() > 0)
 	{
 		currentShaderProgram = currentGameObject->getShaderProgram();
 		glUseProgram(currentShaderProgram);
@@ -159,6 +159,7 @@ void cleanUp()
 {
 	gameObject -> ~GameObject();
 	camera -> ~Camera();
+	light -> ~Light();
 }
 
 void update()
@@ -177,7 +178,9 @@ void renderScene()
 	//clear the colour and depth buffer
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	renderGameObject(gameObject);
 	light->setUpLight(currentShaderProgram);
+
 }
 
 void renderPostProcessing()

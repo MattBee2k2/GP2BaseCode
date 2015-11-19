@@ -64,8 +64,8 @@ public:
 
 	void addChild(shared_ptr<GameObject> child)
 	{
-		this->m_ParentGameObject;
-		 m_ChildGameObjects.push_back(child);
+		child->m_ParentGameObject = this;
+		m_ChildGameObjects.push_back(child);
 	};
 
 	shared_ptr<GameObject> getChild(int i)
@@ -92,7 +92,7 @@ private:
 	float m_SpecularPower;
 
 	GameObject * m_ParentGameObject;
-	vector <shared_ptr<GameObject>>   m_ChildGameObjects;
+	vector <shared_ptr<GameObject>> m_ChildGameObjects;
 
 protected:
 
