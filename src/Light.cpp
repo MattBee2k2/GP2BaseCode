@@ -3,11 +3,11 @@
 
 Light::Light()
 {
-	vec4 m_AmbientLightColour = vec4(1.0f, 1.0f, 1.0f, 1.0f);
-	vec4 m_DiffuseLightColour = vec4(1.0f, 1.0f, 1.0f, 1.0f);
-	vec4 m_SpecularLightColour = vec4(1.0f, 1.0f, 1.0f, 1.0f);
+	m_AmbientLightColour = vec4(1.0f, 1.0f, 1.0f, 1.0f);
+	m_DiffuseLightColour = vec4(1.0f, 1.0f, 1.0f, 1.0f);
+	m_SpecularLightColour = vec4(1.0f, 1.0f, 1.0f, 1.0f);
 
-	vec3 m_LightDirection = vec3(0.0f, 0.0f, 1.0f);
+	m_LightDirection = vec3(0.0f, 0.0f, 1.0f);
 }
 
 Light::~Light()

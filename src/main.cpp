@@ -33,6 +33,7 @@ GLuint currentShaderProgram = 0;
 
 void renderGameObject(shared_ptr<GameObject> currentGameObject)
 {
+
 	MVPMatrix = camera->getProjMatrix() * camera->getViewMatrix() * currentGameObject->getModelMatrix();
 
 	if (currentGameObject->getShaderProgram() > 0)
@@ -41,8 +42,9 @@ void renderGameObject(shared_ptr<GameObject> currentGameObject)
 		glUseProgram(currentShaderProgram);
 	}
 
-	GLuint currentShaderProgram = currentGameObject->getShaderProgram();
-	glUseProgram(currentShaderProgram);
+	light->setUpLight(currentShaderProgram);
+	gameObject->setUpGameObjectMaterial(currentShaderProgram);
+
 
 	GLint MVPLocation = glGetUniformLocation(currentShaderProgram, "MVP");
 	glUniformMatrix4fv(MVPLocation, 1, GL_FALSE, value_ptr(MVPMatrix));
@@ -143,6 +145,13 @@ void initScene()
 	gameObject->loadShader(vsPath, fsPath);
 
 	createFramebuffer();
+
+	/*string modelPath = ASSET_PATH + MODEL_PATH + "/utah-teapot.fbx";
+	auto currentGameObject = loadFBXFromFile(modelPath);
+
+	currentGameObject->loadShader(vsPath, fsPath);
+	currentGameObject->setScale(vec3(0.3f, 0.3f, 0.3f));*/
+
 }
 
 void cleanUpFramebuffer()
@@ -164,6 +173,7 @@ void cleanUp()
 
 void update()
 {
+	camera->setCamPos(vec3(4.0f, 2.0f, 10.0f));
 	camera->onUpdate();
 
 	gameObject->update();
@@ -179,7 +189,6 @@ void renderScene()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	renderGameObject(gameObject);
-	light->setUpLight(currentShaderProgram);
 
 }
 

@@ -36,9 +36,6 @@ void initOpenGL()
 
 	std::cout << getRendererCapsAsString() << endl;
 
-    //Smooth shading
-    glShadeModel( GL_SMOOTH );
-
     //clear the background to black
     glClearColor( 0.0f, 0.0f, 0.0f, 0.0f );
 

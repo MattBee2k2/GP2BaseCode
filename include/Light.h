@@ -33,22 +33,22 @@ public:
 		m_LightDirection = lightDirection;
 	};
 
-	vec4 getAmbientLightColour()
+	vec4& getAmbientLightColour()
 	{
 		return m_AmbientLightColour;
 	};
 
-	vec4 getDiffuseLightColour()
+	vec4& getDiffuseLightColour()
 	{
 		return m_DiffuseLightColour;
 	};
 
-	vec4 getSpecularLightColour()
+	vec4& getSpecularLightColour()
 	{
 		return m_SpecularLightColour;
 	};
 
-	vec3 getLightDirection()
+	vec3& getLightDirection()
 	{
 		return m_LightDirection;
 	}

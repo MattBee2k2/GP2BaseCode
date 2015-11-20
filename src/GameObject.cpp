@@ -18,7 +18,7 @@ GameObject::GameObject()
 	m_AmbientMaterial = vec4(0.2f, 0.2f, 0.2f, 1.0f);
 	m_DiffuseMaterial = vec4(0.6f, 0.6f, 0.6f, 1.0f);
 	m_SpecularMaterial = vec4(1.0f, 1.0f, 1.0f, 1.0f);
-	m_SpecularPower = 120.0f;
+	m_SpecularPower = 20.0f;
 
 	m_ParentGameObject = NULL;
 	m_ChildGameObjects.clear();
@@ -114,4 +114,22 @@ void GameObject::loadShader(const string& vsFilename, const string& fsFilename)
 	//now we can delete the VS & FS Programs
 	glDeleteShader(vertexShaderProgram);
 	glDeleteShader(fragmentShaderProgram);
+}
+
+void GameObject::setUpGameObjectMaterial(GLuint currentShaderProgram)
+{
+	GLint ambientMaterialColourLocation = glGetUniformLocation(currentShaderProgram, "ambientMaterialColour");
+	glUniform4fv(ambientMaterialColourLocation, 1, value_ptr(m_AmbientMaterial));
+
+	GLint diffuseLightMaterialLocation = glGetUniformLocation(currentShaderProgram, "diffuseMaterialColour");
+	glUniform4fv(diffuseLightMaterialLocation, 1, value_ptr(m_DiffuseMaterial));
+
+	GLint specularLightMaterialLocation = glGetUniformLocation(currentShaderProgram, "specularMaterialColour");
+	glUniform4fv(specularLightMaterialLocation, 1, value_ptr(m_SpecularMaterial));
+
+	GLint specularPowerLocation = glGetUniformLocation(currentShaderProgram, "specularPower");
+	glUniform1f(specularPowerLocation, specularPowerLocation);
+
+
+
 }
