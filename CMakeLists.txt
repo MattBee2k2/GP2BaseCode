@@ -4,8 +4,8 @@ project (GP2BaseCode)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 list( APPEND CMAKE_CXX_FLAGS "-std=c++0x ${CMAKE_CXX_FLAGS} -ftest-coverage -fprofile-arcs")
 
-set(CMAKE_PREFIX_PATH "O:\Users\Matthew\Documents\Uni Work\3rd Year\Games Programming 2\Lab Work\glew-1.12.0\include")
-set(CMAKE_LIBRARY_PATH "O:\Users\Matthew\Documents\Uni Work\3rd Year\Games Programming 2\Lab Work\glew-1.12.0\lib\Release\x64")
+set(CMAKE_PREFIX_PATH "O:/Users/Matthew/Documents/Uni Work/3rd Year/Games Programming 2/Lab Work/glew-1.12.0/include")
+set(CMAKE_LIBRARY_PATH "O:/Users/Matthew/Documents/Uni Work/3rd Year/Games Programming 2/Lab Work/glew-1.12.0/lib/Release/x64")
 
 find_package(OpenGL REQUIRED)
 find_package(SDL2 REQUIRED)
