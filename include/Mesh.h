@@ -4,6 +4,18 @@
 #include "Vertices.h"
 #include "Common.h"
 
+class Mesh
+{
+public:
+
+private:
+
+protected:
+};
+
+
+
+
 struct MeshData
 {
 	vector<Vertex> vertices;
