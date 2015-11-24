@@ -43,7 +43,7 @@ void renderGameObject(shared_ptr<GameObject> currentGameObject)
 	}
 
 	light->setUpLight(currentShaderProgram);
-	gameObject->setUpGameObjectMaterial(currentShaderProgram);
+	gameObject->setUpGameObjectMaterial();
 
 
 	GLint MVPLocation = glGetUniformLocation(currentShaderProgram, "MVP");
@@ -138,19 +138,21 @@ void createFramebuffer()
 
 void initScene()
 {
-	gameObject->createBuffer(cubeVerts, numberOfCubeVerts, cubeIndices, numberOfCubeIndices);
+	//gameObject->createBuffer(cubeVerts, numberOfCubeVerts, cubeIndices, numberOfCubeIndices);
+	//gameObject->loadShader(vsPath, fsPath);
+
+	createFramebuffer();
+
+
+	string modelPath = ASSET_PATH + MODEL_PATH + "/utah-teapot.fbx";
+	gameObject = loadFBXFromFile(modelPath);
 
 	string vsPath = ASSET_PATH + SHADER_PATH + "/simpleVS.glsl";
 	string fsPath = ASSET_PATH + SHADER_PATH + "/simpleFS.glsl";
 	gameObject->loadShader(vsPath, fsPath);
 
-	createFramebuffer();
-
-	/*string modelPath = ASSET_PATH + MODEL_PATH + "/utah-teapot.fbx";
-	auto currentGameObject = loadFBXFromFile(modelPath);
-
-	currentGameObject->loadShader(vsPath, fsPath);
-	currentGameObject->setScale(vec3(0.3f, 0.3f, 0.3f));*/
+	gameObject->setPosition(vec3(10.0, 50.0, 0.0f));
+	gameObject->setScale(vec3(0.1f, 0.1f, 0.1f));
 
 }
 

@@ -16,7 +16,7 @@ public:
 
 	void createBuffer(Vertex *pVerts, int numVerts, int *pindices, int numIndices);
 	void loadShader(const string& vsFilename, const string& fsFilename);
-	void setUpGameObjectMaterial(GLuint currentShaderProgram);
+	void setUpGameObjectMaterial();
 
 	GLuint getShaderProgram()
 	{

@@ -116,19 +116,19 @@ void GameObject::loadShader(const string& vsFilename, const string& fsFilename)
 	glDeleteShader(fragmentShaderProgram);
 }
 
-void GameObject::setUpGameObjectMaterial(GLuint currentShaderProgram)
+void GameObject::setUpGameObjectMaterial()
 {
-	GLint ambientMaterialColourLocation = glGetUniformLocation(currentShaderProgram, "ambientMaterialColour");
+	GLint ambientMaterialColourLocation = glGetUniformLocation(m_ShaderProgram, "ambientMaterialColour");
 	glUniform4fv(ambientMaterialColourLocation, 1, value_ptr(m_AmbientMaterial));
 
-	GLint diffuseLightMaterialLocation = glGetUniformLocation(currentShaderProgram, "diffuseMaterialColour");
+	GLint diffuseLightMaterialLocation = glGetUniformLocation(m_ShaderProgram, "diffuseMaterialColour");
 	glUniform4fv(diffuseLightMaterialLocation, 1, value_ptr(m_DiffuseMaterial));
 
-	GLint specularLightMaterialLocation = glGetUniformLocation(currentShaderProgram, "specularMaterialColour");
+	GLint specularLightMaterialLocation = glGetUniformLocation(m_ShaderProgram, "specularMaterialColour");
 	glUniform4fv(specularLightMaterialLocation, 1, value_ptr(m_SpecularMaterial));
 
-	GLint specularPowerLocation = glGetUniformLocation(currentShaderProgram, "specularPower");
-	glUniform1f(specularPowerLocation, specularPowerLocation);
+	GLint specularPowerLocation = glGetUniformLocation(m_ShaderProgram, "specularPower");
+	glUniform1f(specularPowerLocation, m_SpecularPower);
 
 
 
