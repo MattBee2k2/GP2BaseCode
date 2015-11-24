@@ -14,7 +14,6 @@ public:
 
 	void update();
 
-	void createBuffer(Vertex *pVerts, int numVerts, int *pindices, int numIndices);
 	void loadShader(const string& vsFilename, const string& fsFilename);
 	void setUpGameObjectMaterial();
 
@@ -23,15 +22,6 @@ public:
 		return m_ShaderProgram;
 	};
 
-	GLuint getVertexArrayObject()
-	{
-		return m_VAO;
-	};
-
-	int getNumberOfIndices()
-	{
-		return m_NoOfIndices;
-	};
 
 	mat4& getModelMatrix()
 	{
@@ -75,12 +65,7 @@ public:
 	}
 
 private:
-	GLuint m_VBO;
-	GLuint m_EBO;
-	GLuint m_VAO;
 	GLuint m_ShaderProgram;
-	int m_NoOfVertices;
-	int m_NoOfIndices;
 
 	mat4 m_ModelMatrix;
 	vec3 m_Position;
