@@ -10,6 +10,8 @@
 #include "Cube.h"
 #include <Camera.h>
 #include <Light.h>
+#include <Material.h>
+
 
 shared_ptr<GameObject> gameObject = shared_ptr<GameObject>(new GameObject);
 vector <shared_ptr<GameObject>> gameObjects;
@@ -139,12 +141,10 @@ void createFramebuffer()
 
 void initScene()
 {
-	//gameObject->createBuffer(cubeVerts, numberOfCubeVerts, cubeIndices, numberOfCubeIndices);
-	//gameObject->loadShader(vsPath, fsPath);
 
 	createFramebuffer();
 
-
+	//Object 1 - Teapot
 	string modelPath = ASSET_PATH + MODEL_PATH + "/utah-teapot.fbx";
 	gameObject = loadFBXFromFile(modelPath);
 	string vsPath = ASSET_PATH + SHADER_PATH + "/simpleVS.glsl";
@@ -154,8 +154,11 @@ void initScene()
 	gameObject->setScale(vec3(0.1f, 0.1f, 0.1f));
 	gameObjects.push_back(gameObject);
 
+	//Object 2 - Armored Car
 	modelPath = ASSET_PATH + MODEL_PATH + "/armoredrecon.fbx";
 	gameObject = loadFBXFromFile(modelPath);
+	vsPath = ASSET_PATH + SHADER_PATH + "/specularVS.glsl";
+	fsPath = ASSET_PATH + SHADER_PATH + "/specularFS.glsl";
 	gameObject->loadShader(vsPath, fsPath);
 	gameObject->setPosition(vec3(0.0f, 0.0f, 0.0f));
 	gameObjects.push_back(gameObject);

@@ -3,6 +3,8 @@
 
 #include "Common.h"
 #include "Vertices.h"
+#include "Mesh.h"
+#include "Material.h"
 
 
 class GameObject
@@ -15,11 +17,29 @@ public:
 	void update();
 
 	void loadShader(const string& vsFilename, const string& fsFilename);
+	void loadDiffuseMap(const string& filename);
 	void setUpGameObjectMaterial();
+	void createBuffer(Vertex * pVerts, int numVerts, int *pindices, int numIndices);
+
+	GLuint getVertexArrayObject()
+	{
+		return m_Mesh->getVertexArrayObject();
+	};
+
+	int getNumberOfIndices()
+	{
+		return m_Mesh->getNumberOfIndices();
+	};
+
+	int getNumberOfVertices()
+	{
+		return m_Mesh->getNumberOfVertices();
+	};
+
 
 	GLuint getShaderProgram()
 	{
-		return m_ShaderProgram;
+		return m_Material->getShaderProgram();
 	};
 
 
@@ -64,21 +84,42 @@ public:
 		return m_ChildGameObjects.at(i);
 	}
 
-private:
-	GLuint m_ShaderProgram;
+	vec4& getAmbientMaterial()
+	{
+		return m_Material->getAmbientMaterial();
+	};
 
+	vec4& getDiffuseMaterial()
+	{
+		return m_Material->getDiffuseMaterial();
+	};
+
+	vec4& getSpecularMaterial()
+	{
+		return m_Material->getSpecularMaterial();
+	};
+
+	float getSpecularPower()
+	{
+		return m_Material->getSpecularPower();
+	};
+
+	GLuint getDiffuseMap()
+	{
+		return m_Material->getDiffuseMap();
+	};
+
+private:
 	mat4 m_ModelMatrix;
 	vec3 m_Position;
 	vec3 m_Rotation;
 	vec3 m_Scale;
 
-	vec4 m_AmbientMaterial;
-	vec4 m_DiffuseMaterial;
-	vec4 m_SpecularMaterial;
-	float m_SpecularPower;
-
 	GameObject * m_ParentGameObject;
 	vector <shared_ptr<GameObject>> m_ChildGameObjects;
+
+	shared_ptr<Mesh> m_Mesh;
+	shared_ptr<Material> m_Material;
 
 protected:
 

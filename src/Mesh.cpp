@@ -17,7 +17,7 @@ Mesh::~Mesh()
 	glDeleteVertexArrays(1, &m_VAO);
 }
 
-void Mesh::createBuffer(Vertex *pVerts, int numVerts, int *pindices, int numIndices)
+void Mesh::create(Vertex *pVerts, int numVerts, int *pindices, int numIndices)
 {
 	m_NoOfVertices = numVerts;
 	m_NoOfIndices = numIndices;

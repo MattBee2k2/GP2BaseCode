@@ -1,28 +1,25 @@
 #include "GameObject.h"
 #include "Shader.h"
+#include "Material.h"
 
 GameObject::GameObject()
 {
-	m_ShaderProgram = 0;
-
 	m_ModelMatrix = mat4(1.0f);
 	m_Position = vec3(0.0f, 0.0f, 0.0f);
 	m_Rotation = vec3(0.0f, 0.0f, 0.0f); 
 	m_Scale = vec3(1.0f, 1.0f, 1.0f);
 
-	m_AmbientMaterial = vec4(0.2f, 0.2f, 0.2f, 1.0f);
-	m_DiffuseMaterial = vec4(0.6f, 0.6f, 0.6f, 1.0f);
-	m_SpecularMaterial = vec4(1.0f, 1.0f, 1.0f, 1.0f);
-	m_SpecularPower = 20.0f;
-
 	m_ParentGameObject = NULL;
 	m_ChildGameObjects.clear();
+
+	m_Mesh = shared_ptr<Mesh>(new Mesh);
+	m_Material = shared_ptr<Material>(new Material);
+
 }
 
 
 GameObject::~GameObject()
 {
-	glDeleteProgram(m_ShaderProgram);
 	m_ChildGameObjects.clear();
 }
 
@@ -47,48 +44,25 @@ void GameObject::update()
 	}
 }
 
+void GameObject::createBuffer(Vertex *pVerts, int numVerts, int *pIndices, int numIndices)
+{
+	m_Mesh = shared_ptr<Mesh>(new Mesh);
+	m_Mesh->create(pVerts, numVerts, pIndices, numIndices);
+}
 
 void GameObject::loadShader(const string& vsFilename, const string& fsFilename)
 {
-	GLuint vertexShaderProgram = 0;
-	vertexShaderProgram = loadShaderFromFile(vsFilename, VERTEX_SHADER);
-	checkForCompilerErrors(vertexShaderProgram);
-
-	GLuint fragmentShaderProgram = 0;
-	fragmentShaderProgram = loadShaderFromFile(fsFilename, FRAGMENT_SHADER);
-	checkForCompilerErrors(fragmentShaderProgram);
-
-	m_ShaderProgram = glCreateProgram();
-	glAttachShader(m_ShaderProgram, vertexShaderProgram);
-	glAttachShader(m_ShaderProgram, fragmentShaderProgram);
-
-	//Link attributes
-	glBindAttribLocation(m_ShaderProgram, 0, "vertexPosition");
-	glBindAttribLocation(m_ShaderProgram, 1, "vertexColour");
-	glBindAttribLocation(m_ShaderProgram, 2, "vertexTexCoords");
-	glBindAttribLocation(m_ShaderProgram, 3, "vertexNormal");
-
-	glLinkProgram(m_ShaderProgram);
-	checkForLinkErrors(m_ShaderProgram);
-	//now we can delete the VS & FS Programs
-	glDeleteShader(vertexShaderProgram);
-	glDeleteShader(fragmentShaderProgram);
+	m_Material = shared_ptr<Material>(new Material);
+	m_Material->loadShader(vsFilename, fsFilename);
 }
 
 void GameObject::setUpGameObjectMaterial()
 {
-	GLint ambientMaterialColourLocation = glGetUniformLocation(m_ShaderProgram, "ambientMaterialColour");
-	glUniform4fv(ambientMaterialColourLocation, 1, value_ptr(m_AmbientMaterial));
+	m_Material->setUpUniforms();
+}
 
-	GLint diffuseLightMaterialLocation = glGetUniformLocation(m_ShaderProgram, "diffuseMaterialColour");
-	glUniform4fv(diffuseLightMaterialLocation, 1, value_ptr(m_DiffuseMaterial));
-
-	GLint specularLightMaterialLocation = glGetUniformLocation(m_ShaderProgram, "specularMaterialColour");
-	glUniform4fv(specularLightMaterialLocation, 1, value_ptr(m_SpecularMaterial));
-
-	GLint specularPowerLocation = glGetUniformLocation(m_ShaderProgram, "specularPower");
-	glUniform1f(specularPowerLocation, m_SpecularPower);
-
-
-
+void GameObject::loadDiffuseMap(const string& filename)
+{
+	m_Material = shared_ptr<Material>(new Material);
+	m_Material->loadDiffuseMap(filename);
 }

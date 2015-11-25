@@ -11,7 +11,7 @@ public:
 	Mesh();
 	~Mesh();
 	void update();
-	void createBuffer(Vertex *pVerts, int numVerts, int *pindices, int numIndices);
+	void create(Vertex *pVerts, int numVerts, int *pindices, int numIndices);
 
 	GLuint getVertexArrayObject()
 	{
